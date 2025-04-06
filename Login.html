@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Basketball Club - Sign Up</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    :root {
+      --primary: #FF6B00;
+      --secondary: #2D3748;
+      --light: #F7FAFC;
+      --dark: #1A202C;
+      --court: #006747;
+      --hoop: #C8102E;
+      --success: #48BB78;
+      --error: #F56565;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Poppins', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    @font-face {
+      font-family: 'Poppins';
+      src: url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+    }
+
+    body {
+      background-color: var(--light);
+      color: var(--dark);
+      background-image: url('https://www.transparenttextures.com/patterns/concrete-wall.png');
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    .login-container {
+      width: 100%;
+      max-width: 500px;
+      background-color: white;
+      border-radius: 15px;
+      box-shadow: 0 15px 40px rgba(0, 0, 0, 0.1);
+      overflow: hidden;
+      position: relative;
+    }
+
+    .login-header {
+      background-color: var(--hoop);
+      color: white;
+      padding: 2rem;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .login-header::before {
+      content: '';
+      position: absolute;
+      top: -50px;
+      left: -50px;
+      width: 100px;
+      height: 100px;
+      background-color: rgba(255,255,255,0.1);
+      border-radius: 50%;
+    }
+
+    .login-header::after {
+      content: '';
+      position: absolute;
+      bottom: -30px;
+      right: -30px;
+      width: 80px;
+      height: 80px;
+      background-color: rgba(255,255,255,0.1);
+      border-radius: 50%;
+    }
+
+    .logo {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin-bottom: 1rem;
+    }
+
+    .logo-icon {
+      font-size: 3rem;
+      margin-right: 1rem;
+      animation: bounce 2s infinite;
+    }
+
+    @keyframes bounce {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-10px); }
+    }
+
+    .login-header h1 {
+      font-size: 2rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .login-header p {
+      opacity: 0.9;
+    }
+
+    .login-form {
+      padding: 2rem;
+    }
+
+    .form-group {
+      margin-bottom: 1.5rem;
+      position: relative;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-weight: 500;
+      color: var(--secondary);
+    }
+
+    .form-control {
+      width: 100%;
+      padding: 0.8rem 1rem;
+      border: 2px solid #E2E8F0;
+      border-radius: 8px;
+      font-size: 1rem;
+      transition: all 0.3s ease;
+    }
+
+    .form-control:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(255, 107, 0, 0.2);
+    }
+
+    .error-message {
+      color: var(--error);
+      font-size: 0.8rem;
+      margin-top: 0.3rem;
+      display: none;
+    }
+
+    .form-group.error .error-message {
+      display: block;
+    }
+
+    .form-group.error .form-control {
+      border-color: var(--error);
+    }
+
+    .form-group.success .form-control {
+      border-color: var(--success);
+    }
+
+    .btn {
+      display: block;
+      width: 100%;
+      padding: 1rem;
+      background-color: var(--primary);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 1.1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .btn:hover {
+      background-color: #E55D00;
+      transform: translateY(-2px);
+    }
+
+    .btn:active {
+      transform: translateY(0);
+    }
+
+    .login-footer {
+      text-align: center;
+      padding: 1rem 2rem 2rem;
+      color: #718096;
+    }
+
+    .login-footer a {
+      color: var(--primary);
+      text-decoration: none;
+      font-weight: 500;
+    }
+
+    .position-options {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0.5rem;
+      margin-top: 0.5rem;
+    }
+
+    .position-option {
+      display: none;
+    }
+
+    .position-label {
+      display: block;
+      padding: 0.5rem;
+      text-align: center;
+      background-color: #EDF2F7;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .position-option:checked + .position-label {
+      background-color: var(--primary);
+      color: white;
+    }
+
+    .skill-level {
+      display: flex;
+      align-items: center;
+      margin-top: 0.5rem;
+    }
+
+    .skill-level label {
+      margin-right: 1rem;
+      white-space: nowrap;
+    }
+
+    .skill-level input {
+      width: 100%;
+    }
+
+    .skill-value {
+      margin-left: 0.5rem;
+      font-weight: bold;
+      color: var(--primary);
+      min-width: 30px;
+      text-align: right;
+    }
+
+    @media (max-width: 576px) {
+      .login-container {
+        margin: 1rem;
+      }
+      
+      .position-options {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="login-container">
+    <div class="login-header">
+      <div class="logo">
+        <div class="logo-icon">🏀</div>
+        <h1>HOOPS HUB</h1>
+      </div>
+      <p>Join our basketball community</p>
+    </div>
+    
+    <form id="signupForm" class="login-form">
+      <div class="form-group">
+        <label for="fullName">Full Name</label>
+        <input type="text" id="fullName" class="form-control" placeholder="Enter your full name">
+        <span class="error-message">Please enter your full name</span>
+      </div>
+      
+      <div class="form-group">
+        <label for="email">Email Address</label>
+        <input type="email" id="email" class="form-control" placeholder="Enter your email">
+        <span class="error-message">Please enter a valid email address</span>
+      </div>
+      
+      <div class="form-group">
+        <label for="password">Password</label>
+        <input type="password" id="password" class="form-control" placeholder="Create a password">
+        <span class="error-message">Password must be at least 6 characters</span>
+      </div>
+      
+      <div class="form-group">
+        <label for="age">Age</label>
+        <input type="number" id="age" class="form-control" placeholder="Enter your age" min="12" max="99">
+        <span class="error-message">Please enter a valid age (12-99)</span>
+      </div>
+      
+      <div class="form-group">
+        <label>Preferred Position</label>
+        <div class="position-options">
+          <input type="radio" id="guard" name="position" value="Guard" class="position-option">
+          <label for="guard" class="position-label">Guard</label>
+          
+          <input type="radio" id="forward" name="position" value="Forward" class="position-option">
+          <label for="forward" class="position-label">Forward</label>
+          
+          <input type="radio" id="center" name="position" value="Center" class="position-option">
+          <label for="center" class="position-label">Center</label>
+          
+          <input type="radio" id="any" name="position" value="Any" class="position-option" checked>
+          <label for="any" class="position-label">Any</label>
+        </div>
+        <span class="error-message">Please select a position</span>
+      </div>
+      
+      <div class="form-group">
+        <label for="skillLevel">Skill Level</label>
+        <div class="skill-level">
+          <label for="skillLevel">Beginner</label>
+          <input type="range" id="skillLevel" class="form-control" min="1" max="10" value="5">
+          <span class="skill-value">5</span>
+        </div>
+      </div>
+      <button type="submit" class="btn">Join Hoops Hub</button>
+    </form>
+    
+    <div class="login-footer">
+      Already have an account? <a href="#">Log in here</a>
+    </div>
+  </div>
+  <script>
+    const form = document.getElementById('signupForm'); // This was missing!
+  
+    // Skill level input value display
+    const skillLevelInput = document.getElementById('skillLevel');
+    const skillValue = document.querySelector('.skill-value');
+    skillLevelInput.addEventListener('input', () => {
+      skillValue.textContent = skillLevelInput.value;
+    });
+  
+    form.addEventListener('submit', function(e) {
+      e.preventDefault();
+      
+      // Reset error states
+      const errorGroups = document.querySelectorAll('.form-group.error');
+      errorGroups.forEach(group => group.classList.remove('error'));
+      
+      // Validate inputs
+      let isValid = true;
+      
+      // Full Name validation
+      const fullName = document.getElementById('fullName').value.trim();
+      localStorage.setItem('fullName', fullName);
+      if (fullName === '' || fullName.length < 2) {
+        showError('fullName', 'Please enter your full name');
+        isValid = false;
+      }
+      
+      // Email validation
+      const email = document.getElementById('email').value.trim();
+      if (!validateEmail(email)) {
+        showError('email', 'Please enter a valid email address');
+        isValid = false;
+      }
+      
+      // Password validation
+      const password = document.getElementById('password').value;
+      if (password.length < 6) {
+        showError('password', 'Password must be at least 6 characters');
+        isValid = false;
+      }
+      
+      // Age validation
+      const age = parseInt(document.getElementById('age').value);
+      if (isNaN(age) || age < 12 || age > 99) {
+        showError('age', 'Please enter a valid age (12-99)');
+        isValid = false;
+      }
+      
+      // Position validation
+      const position = document.querySelector('input[name="position"]:checked');
+      if (!position) {
+        showError(document.querySelector('.position-options').parentElement, 'Please select a position');
+        isValid = false;
+      }
+      
+      // If form is valid, submit it
+      if (isValid) {
+        const formData = {
+          fullName,
+          email,
+          password,
+          age,
+          position: position.value,
+          skillLevel: skillLevelInput.value
+        };
+        
+        console.log('Form submitted:', formData);
+        alert(`Welcome to Hoops Hub, ${fullName}! Your account has been created.`);
+        // Redirect
+        window.location.href = 'Index.html';
+      }
+    });
+  
+    function showError(idOrElement, message) {
+      let formGroup;
+      if (typeof idOrElement === 'string') {
+        formGroup = document.getElementById(idOrElement).parentElement;
+      } else {
+        formGroup = idOrElement;
+      }
+      formGroup.classList.add('error');
+      formGroup.querySelector('.error-message').textContent = message;
+    }
+  
+    function validateEmail(email) {
+      const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      return re.test(String(email).toLowerCase());
+    }
+  </script>
+  
+</body>
+</html>

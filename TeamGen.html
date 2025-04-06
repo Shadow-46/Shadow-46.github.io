@@ -1,0 +1,635 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Random Team Generator</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    :root {
+      --primary: #FF6B00;
+      --secondary: #2D3748;
+      --light: #F7FAFC;
+      --dark: #1A202C;
+      --team1: #4299E1;
+      --team2: #C8102E;
+      --success: #48BB78;
+      --warning: #ED8936;
+      --danger: #F56565;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Poppins', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    @font-face {
+      font-family: 'Poppins';
+      src: url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+    }
+
+    body {
+      background-color: var(--light);
+      color: var(--dark);
+      overflow-x: hidden;
+      background-image: url('https://www.transparenttextures.com/patterns/concrete-wall.png');
+      background-attachment: fixed;
+    }
+
+    /* Header */
+    header {
+      background-color: rgba(26, 32, 44, 0.95);
+      color: var(--light);
+      padding: 1rem 2rem;
+      position: fixed;
+      width: 100%;
+      top: 0;
+      z-index: 100;
+      transition: all 0.3s ease;
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid rgba(255, 107, 0, 0.2);
+    }
+
+    .header-shrink {
+      padding: 0.5rem 2rem;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      font-size: 1.8rem;
+      font-weight: bold;
+      color: var(--primary);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .logo-icon {
+      margin-right: 10px;
+      font-size: 2.5rem;
+    }
+
+    /* Main Content */
+    .container {
+      max-width: 1200px;
+      margin: 100px auto 50px;
+      padding: 0 20px;
+    }
+
+    .section {
+      background-color: white;
+      border-radius: 15px;
+      padding: 2.5rem;
+      box-shadow: 0 15px 40px rgba(0, 0, 0, 0.1);
+      margin-bottom: 3rem;
+      border: 1px solid rgba(0,0,0,0.05);
+    }
+
+    .section-title {
+      text-align: center;
+      font-size: 2.5rem;
+      margin-bottom: 2rem;
+      color: var(--dark);
+      position: relative;
+    }
+
+    .section-title::after {
+      content: '';
+      position: absolute;
+      bottom: -15px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 100px;
+      height: 5px;
+      background-color: var(--primary);
+      border-radius: 5px;
+    }
+
+    /* Input Area */
+    .input-area {
+      margin-bottom: 2rem;
+    }
+
+    .form-group {
+      margin-bottom: 1.5rem;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-weight: 500;
+      color: var(--secondary);
+    }
+
+    .form-control {
+      width: 100%;
+      padding: 0.8rem 1rem;
+      border: 2px solid #E2E8F0;
+      border-radius: 8px;
+      font-size: 1rem;
+      transition: all 0.3s ease;
+    }
+
+    .form-control:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(255, 107, 0, 0.2);
+    }
+
+    textarea.form-control {
+      min-height: 120px;
+      resize: vertical;
+    }
+
+    .btn {
+      display: inline-block;
+      padding: 1rem 2.5rem;
+      background-color: var(--primary);
+      color: white;
+      border: none;
+      border-radius: 50px;
+      font-size: 1.1rem;
+      font-weight: 600;
+      text-decoration: none;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .btn:hover {
+      background-color: #E55D00;
+      transform: translateY(-3px);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+    }
+
+    .btn:active {
+      transform: translateY(0);
+    }
+
+    .btn-block {
+      display: block;
+      width: 100%;
+    }
+
+    /* Player List */
+    .player-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+
+    .player-tag {
+      display: flex;
+      align-items: center;
+      background-color: #EDF2F7;
+      padding: 0.5rem 1rem;
+      border-radius: 50px;
+      font-size: 0.9rem;
+    }
+
+    .player-tag .skill {
+      margin-left: 0.5rem;
+      font-weight: bold;
+      color: var(--primary);
+    }
+
+    .player-tag .remove {
+      margin-left: 0.5rem;
+      cursor: pointer;
+      color: #718096;
+    }
+
+    .player-tag .remove:hover {
+      color: var(--danger);
+    }
+
+    /* Teams Display */
+    .teams-container {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2rem;
+      margin-top: 2rem;
+    }
+
+    .team {
+      padding: 1.5rem;
+      border-radius: 10px;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+
+    .team-1 {
+      background-color: rgba(66, 153, 225, 0.1);
+      border: 2px solid var(--team1);
+    }
+
+    .team-2 {
+      background-color: rgba(200, 16, 46, 0.1);
+      border: 2px solid var(--team2);
+    }
+
+    .team-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 2px solid rgba(0,0,0,0.1);
+    }
+
+    .team-title {
+      font-size: 1.5rem;
+      font-weight: 600;
+    }
+
+    .team-1 .team-title {
+      color: var(--team1);
+    }
+
+    .team-2 .team-title {
+      color: var(--team2);
+    }
+
+    .team-skill {
+      font-weight: 700;
+      font-size: 1.2rem;
+    }
+
+    .team-members {
+      list-style: none;
+    }
+
+    .team-members li {
+      padding: 0.8rem 0;
+      border-bottom: 1px solid rgba(0,0,0,0.05);
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .team-members li:last-child {
+      border-bottom: none;
+    }
+
+    .member-skill {
+      font-weight: 600;
+    }
+
+    /* Balance Indicator */
+    .balance-indicator {
+      text-align: center;
+      margin: 2rem 0;
+      font-size: 1.2rem;
+      font-weight: 500;
+    }
+
+    .balanced {
+      color: var(--success);
+    }
+
+    .unbalanced {
+      color: var(--danger);
+    }
+
+    /* Options */
+    .options {
+      display: flex;
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+
+    .option-group {
+      flex: 1;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .container {
+        margin-top: 80px;
+      }
+      
+      .section-title {
+        font-size: 2rem;
+      }
+      
+      .teams-container {
+        grid-template-columns: 1fr;
+      }
+      
+      .options {
+        flex-direction: column;
+      }
+    }
+
+    /* Animation */
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .fade-in {
+      animation: fadeIn 0.5s ease forwards;
+    }
+  </style>
+</head>
+<body>
+  <!-- Header -->
+  <header id="header">
+    <nav>
+      <div class="logo">
+        <div class="logo-icon">🏀</div>
+        <span>TEAM GENERATOR</span>
+      </div>
+    </nav>
+  </header>
+
+  <!-- Main Content -->
+  <div class="container">
+    <section class="section">
+      <h2 class="section-title">Random Team Generator</h2>
+      
+      <div class="input-area">
+        <div class="form-group">
+          <label for="playerInput">Enter Players (one per line or comma separated)</label>
+          <textarea id="playerInput" class="form-control" placeholder="Raghul (8) Avinash (8) Ajay (7) Nithil (7) Tinku (7) Abhishek (7) Mohan (6) Sanjay (7) Brijesh (6) Vedha (7) Hitesh (7)"></textarea>
+        </div>
+        
+        <div class="options">
+          <div class="option-group">
+            <label for="teamMethod">Team Generation Method</label>
+            <select id="teamMethod" class="form-control">
+              <option value="random">Pure Random</option>
+              <option value="balanced" selected>Skill Balanced</option>
+              <option value="snake">Snake Draft</option>
+            </select>
+          </div>
+          
+          <div class="option-group">
+            <label for="teamNames">Team Names (comma separated)</label>
+            <input type="text" id="teamNames" class="form-control" placeholder="Team A, Team B" value="Blue Team, Red Team">
+          </div>
+        </div>
+        
+        <button id="generateBtn" class="btn btn-block">Generate Teams</button>
+      </div>
+      
+      <div id="playerTags" class="player-list">
+        <!-- Player tags will appear here -->
+      </div>
+      
+      <div id="teamsResult" style="display: none;">
+        <div class="balance-indicator">
+          Team Balance: <span id="balanceStatus">Not Calculated</span>
+        </div>
+        
+        <div class="teams-container">
+          <div class="team team-1">
+            <div class="team-header">
+              <h3 class="team-title" id="team1Name">Team 1</h3>
+              <div class="team-skill">Skill: <span id="team1Skill">0</span></div>
+            </div>
+            <ul class="team-members" id="team1Members">
+              <!-- Team 1 members will appear here -->
+            </ul>
+          </div>
+          
+          <div class="team team-2">
+            <div class="team-header">
+              <h3 class="team-title" id="team2Name">Team 2</h3>
+              <div class="team-skill">Skill: <span id="team2Skill">0</span></div>
+            </div>
+            <ul class="team-members" id="team2Members">
+              <!-- Team 2 members will appear here -->
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    // Header scroll effect
+    window.addEventListener('scroll', () => {
+      const header = document.getElementById('header');
+      if (window.scrollY > 50) {
+        header.classList.add('header-shrink');
+      } else {
+        header.classList.remove('header-shrink');
+      }
+    });
+
+    // Parse player input
+    function parsePlayers(input) {
+      const players = [];
+      // Split by newlines or commas
+      const lines = input.split(/[\n,]/);
+      
+      for (let line of lines) {
+        line = line.trim();
+        if (!line) continue;
+        
+        // Extract name and skill (skill is optional)
+        const match = line.match(/^(.*?)(?:\((\d+)\))?$/);
+        if (match) {
+          const name = match[1].trim();
+          const skill = match[2] ? parseInt(match[2]) : 5; // Default skill 5
+          if (name) {
+            players.push({ name, skill });
+          }
+        }
+      }
+      
+      return players;
+    }
+
+    // Display player tags
+    function displayPlayerTags(players) {
+      const container = document.getElementById('playerTags');
+      container.innerHTML = '';
+      
+      players.forEach((player, index) => {
+        const tag = document.createElement('div');
+        tag.className = 'player-tag';
+        tag.innerHTML = `
+          ${player.name} <span class="skill">${player.skill}</span>
+          <span class="remove" data-index="${index}">&times;</span>
+        `;
+        container.appendChild(tag);
+      });
+      
+      // Add event listeners to remove buttons
+      document.querySelectorAll('.player-tag .remove').forEach(btn => {
+        btn.addEventListener('click', function() {
+          const index = parseInt(this.getAttribute('data-index'));
+          players.splice(index, 1);
+          displayPlayerTags(players);
+        });
+      });
+    }
+
+    // Generate teams
+    function generateTeams(players, method, teamNames) {
+      if (players.length < 2) {
+        alert('You need at least 2 players to generate teams!');
+        return;
+      }
+      
+      // Shuffle players array
+      const shuffled = [...players].sort(() => Math.random() - 0.5);
+      let team1 = [];
+      let team2 = [];
+      let team1Skill = 0;
+      let team2Skill = 0;
+      
+      if (method === 'random') {
+        // Pure random split
+        const half = Math.ceil(shuffled.length / 2);
+        team1 = shuffled.slice(0, half);
+        team2 = shuffled.slice(half);
+        
+        // Calculate team skills
+        team1Skill = team1.reduce((sum, player) => sum + player.skill, 0);
+        team2Skill = team2.reduce((sum, player) => sum + player.skill, 0);
+      } 
+      else if (method === 'balanced') {
+        // Skill-balanced teams
+        shuffled.sort((a, b) => b.skill - a.skill); // Sort by skill descending
+        
+        for (let i = 0; i < shuffled.length; i++) {
+          if (team1Skill <= team2Skill) {
+            team1.push(shuffled[i]);
+            team1Skill += shuffled[i].skill;
+          } else {
+            team2.push(shuffled[i]);
+            team2Skill += shuffled[i].skill;
+          }
+        }
+      }
+      else if (method === 'snake') {
+        // Snake draft (alternating picks)
+        shuffled.sort((a, b) => b.skill - a.skill); // Sort by skill descending
+        
+        for (let i = 0; i < shuffled.length; i++) {
+          if (i % 2 === 0) {
+            team1.push(shuffled[i]);
+            team1Skill += shuffled[i].skill;
+          } else {
+            team2.push(shuffled[i]);
+            team2Skill += shuffled[i].skill;
+          }
+        }
+      }
+      
+      // Display the teams
+      displayTeams(team1, team2, team1Skill, team2Skill, teamNames);
+    }
+
+    // Display teams
+    function displayTeams(team1, team2, team1Skill, team2Skill, teamNames) {
+      const teamNamesArr = teamNames.split(',').map(name => name.trim());
+      
+      document.getElementById('team1Name').textContent = teamNamesArr[0] || 'Team 1';
+      document.getElementById('team2Name').textContent = teamNamesArr[1] || 'Team 2';
+      
+      document.getElementById('team1Skill').textContent = team1Skill;
+      document.getElementById('team2Skill').textContent = team2Skill;
+      
+      // Display team members
+      const team1List = document.getElementById('team1Members');
+      const team2List = document.getElementById('team2Members');
+      
+      team1List.innerHTML = '';
+      team2List.innerHTML = '';
+      
+      team1.forEach(player => {
+        const li = document.createElement('li');
+        li.innerHTML = `
+          ${player.name} <span class="member-skill">${player.skill}</span>
+        `;
+        team1List.appendChild(li);
+      });
+      
+      team2.forEach(player => {
+        const li = document.createElement('li');
+        li.innerHTML = `
+          ${player.name} <span class="member-skill">${player.skill}</span>
+        `;
+        team2List.appendChild(li);
+      });
+      
+      // Update balance indicator
+      const balanceDiff = Math.abs(team1Skill - team2Skill);
+      const totalSkill = team1Skill + team2Skill;
+      const balancePercentage = (balanceDiff / totalSkill) * 100;
+      
+      const balanceElement = document.getElementById('balanceStatus');
+      if (balancePercentage < 10) {
+        balanceElement.textContent = 'Excellent Balance';
+        balanceElement.className = 'balanced';
+      } else if (balancePercentage < 20) {
+        balanceElement.textContent = 'Good Balance';
+        balanceElement.className = 'balanced';
+      } else if (balancePercentage < 30) {
+        balanceElement.textContent = 'Fair Balance';
+        balanceElement.className = '';
+      } else {
+        balanceElement.textContent = 'Unbalanced';
+        balanceElement.className = 'unbalanced';
+      }
+      
+      // Show results
+      document.getElementById('teamsResult').style.display = 'block';
+    }
+
+    // Event listeners
+    document.getElementById('generateBtn').addEventListener('click', function() {
+      const input = document.getElementById('playerInput').value;
+      const method = document.getElementById('teamMethod').value;
+      const teamNames = document.getElementById('teamNames').value;
+      
+      const players = parsePlayers(input);
+      displayPlayerTags(players);
+      generateTeams(players, method, teamNames);
+    });
+
+    // Sample data button for testing
+    document.addEventListener('DOMContentLoaded', function() {
+      // Add sample data button for demo purposes
+      const sampleBtn = document.createElement('button');
+      sampleBtn.textContent = 'Load Sample Players';
+      sampleBtn.className = 'btn';
+      sampleBtn.style.marginTop = '1rem';
+      sampleBtn.addEventListener('click', function() {
+        document.getElementById('playerInput').value = `Raghul (8)
+Avinash (8)
+Ajay (7)
+Nithil (7)
+Tinku (7)
+Abhishek (7)
+Mohan (6)
+Sanjay (7)
+Brijesh (6)
+Vedha (7)
+Hitesh (7)`;
+        
+        const players = parsePlayers(document.getElementById('playerInput').value);
+        displayPlayerTags(players);
+      });
+      
+      document.querySelector('.input-area').appendChild(sampleBtn);
+    });
+  </script>
+</body>
+</html>

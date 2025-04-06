@@ -1,0 +1,1653 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hoops Hub - Ultimate Basketball Community</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.4/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.4/ScrollTrigger.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.4/ScrollToPlugin.min.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    :root {
+      --primary: #FF6B00;
+      --secondary: #2D3748;
+      --light: #F7FAFC;
+      --dark: #1A202C;
+      --accent: #4299E1;
+      --court: #006747;
+      --hoop: #C8102E;
+      --wood: #8B4513;
+    }
+    
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Poppins', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    
+    @font-face {
+      font-family: 'Poppins';
+      src: url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+    }
+    
+    body {
+      background-color: var(--light);
+      color: var(--dark);
+      overflow-x: hidden;
+      scroll-behavior: smooth;
+    }
+    a {
+      text-decoration: none;
+      color: inherit;
+    }
+    .loader {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: var(--dark);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+      flex-direction: column;
+      overflow: hidden;
+    }
+    
+    .loader-video {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      opacity: 0.8; /* Adjust opacity as needed */
+    }
+    
+    .loader-content {
+      position: relative;
+      z-index: 2;
+      text-align: center;
+    }
+    
+    .loading-text {
+      color: var(--light);
+      margin-top: 20px;
+      font-size: 1.2rem;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      text-shadow: 0 0 10px rgba(0,0,0,0.5);
+    }
+    
+    /* Remove or keep the ball animation as an overlay if you want */
+    .ball {
+      width: 80px;
+      height: 80px;
+      background-color: var(--primary);
+      border-radius: 50%;
+      position: relative;
+      overflow: hidden;
+      animation: bounce 1.5s infinite;
+      box-shadow: inset -10px -10px 15px rgba(0,0,0,0.3);
+      z-index: 3; /* Higher than video */
+    }
+    
+    .ball::before {
+      content: '';
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      background: repeating-linear-gradient(
+        transparent 0%,
+        transparent 10%,
+        var(--dark) 10%,
+        var(--dark) 15%
+      );
+      transform: rotate(25deg);
+    }
+    
+    .ball::after {
+      content: '';
+      position: absolute;
+      top: 15px;
+      left: 15px;
+      width: 20px;
+      height: 20px;
+      background: rgba(255, 255, 255, 0.7);
+      border-radius: 50%;
+      filter: blur(2px);
+    }
+    
+    .loading-text {
+      color: var(--light);
+      margin-top: 20px;
+      font-size: 1.2rem;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+    }
+    
+    @keyframes bounce {
+      0%, 100% { transform: translateY(0) rotate(0deg); }
+      25% { transform: translateY(-30px) rotate(10deg); }
+      50% { transform: translateY(0) rotate(0deg); }
+      75% { transform: translateY(-15px) rotate(-5deg); }
+    }
+    
+    /* Floating basketballs in background */
+    .floating-balls {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: -1;
+    }
+    
+    .floating-ball {
+      position: absolute;
+      width: 50px;
+      height: 50px;
+      background-color: var(--primary);
+      border-radius: 50%;
+      opacity: 0.1;
+      box-shadow: inset -5px -5px 10px rgba(0,0,0,0.2);
+    }
+    
+    /* Header */
+    header {
+      background-color: rgba(26, 32, 44, 0.9);
+      color: var(--light);
+      padding: 1rem 2rem;
+      position: fixed;
+      width: 100%;
+      top: 0;
+      z-index: 100;
+      transition: all 0.3s ease;
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid rgba(255, 107, 0, 0.2);
+    }
+    
+    .header-shrink {
+      padding: 0.5rem 2rem;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    }
+    
+    nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    
+    .logo {
+      display: flex;
+      align-items: center;
+      font-size: 1.8rem;
+      font-weight: bold;
+      color: var(--primary);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+    
+    .logo-icon {
+      margin-right: 10px;
+      font-size: 2.5rem;
+      animation: spin 8s linear infinite;
+    }
+    
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    
+    .nav-links {
+      display: flex;
+      list-style: none;
+    }
+    
+    .nav-links li {
+      margin-left: 2rem;
+      position: relative;
+    }
+    
+    .nav-links a {
+      color: var(--light);
+      text-decoration: none;
+      font-weight: 500;
+      font-size: 1.1rem;
+      transition: all 0.3s ease;
+      position: relative;
+      padding: 5px 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    
+    .nav-links a:hover {
+      color: var(--primary);
+    }
+    
+    .nav-links a::after {
+      content: '';
+      position: absolute;
+      width: 0%;
+      height: 2px;
+      background-color: var(--primary);
+      bottom: 0;
+      left: 0;
+      transition: width 0.3s ease;
+    }
+    
+    .nav-links a:hover::after {
+      width: 100%;
+    }
+    
+    .nav-links a::before {
+      content: '';
+      position: absolute;
+      width: 10px;
+      height: 10px;
+      background-color: var(--primary);
+      border-radius: 50%;
+      bottom: -15px;
+      opacity: 0;
+      transition: all 0.3s ease;
+    }
+    
+    .nav-links a:hover::before {
+      opacity: 1;
+      bottom: -5px;
+    }
+    
+    .hero {
+      height: 100vh;
+      min-height: 600px;
+      max-height: 1200px;
+      position: relative;
+      overflow: hidden;
+      padding: 70px 20px 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .hero-content {
+      text-align: left;
+      color: var(--light);
+      position: relative;
+      width: 100%;
+      max-width: 1200px;
+      padding: 0 20px;
+      z-index: 2;
+      margin: 0 auto;
+    }
+
+    .hero-title {
+      font-size: clamp(2.5rem, 8vw, 5rem);
+      margin-bottom: 1.5rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      text-shadow: 3px 3px 0 rgba(0,0,0,0.3);
+      line-height: 1.2;
+    }
+
+    .hero-subtitle {
+      font-size: clamp(1.1rem, 3vw, 1.8rem);
+      margin-bottom: 2.5rem;
+      font-weight: 300;
+      line-height: 1.5;
+      text-shadow: 1px 1px 3px rgba(0,0,0,0.8);
+      max-width: 600px;
+    }
+
+    .btn {
+      display: inline-block;
+      padding: 1rem 2.5rem;
+      background-color: var(--primary);
+      color: var(--light);
+      border: none;
+      border-radius: 50px;
+      font-size: 1.1rem;
+      font-weight: 600;
+      text-decoration: none;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      margin: 0 15px;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+    
+    .btn:hover {
+      background-color: #E55D00;
+      transform: translateY(-5px);
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+    }
+    
+    .btn:active {
+      transform: translateY(0);
+    }
+    
+    .btn::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+      transition: 0.5s;
+    }
+    
+    .btn:hover::after {
+      left: 100%;
+    }
+    
+    .btn-outline {
+      background-color: transparent;
+      border: 2px solid var(--light);
+    }
+    
+    .btn-outline:hover {
+      background-color: var(--light);
+      color: var(--dark);
+    }
+
+
+    .hero-video {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      z-index: 0;
+    }
+
+    .hero-basketball {
+      position: absolute;
+      width: clamp(60px, 15vw, 100px);
+      height: clamp(60px, 15vw, 100px);
+      right: 5%;
+      bottom: 15%;
+      z-index: 1;
+    }  
+
+    /* Medium devices (tablets) */
+    @media (max-width: 992px) {
+      .hero {
+        min-height: 500px;
+      }
+      
+      .hero-buttons {
+        gap: 15px;
+      }
+      
+      .hero-basketball {
+        right: 3%;
+        bottom: 10%;
+      }
+    }
+
+    /* Small devices (phones) */
+    @media (max-width: 768px) {
+      .hero {
+        min-height: 450px;
+        padding-top: 60px;
+        text-align: center;
+      }
+      
+      .hero-content {
+        text-align: center;
+      }
+      
+      .hero-subtitle {
+        margin-left: auto;
+        margin-right: auto;
+      }
+      
+      .hero-buttons {
+        flex-direction: column;
+        gap: 10px;
+        align-items: center;
+      }
+      
+      .btn {
+        width: 100%;
+        max-width: 250px;
+      }
+      
+      .hero-basketball {
+        display: none; /* Optional: remove on small screens */
+      }
+    }
+
+    /* Extra small devices */
+    @media (max-width: 480px) {
+      .hero {
+        min-height: 400px;
+      }
+      
+      .hero-title {
+        letter-spacing: normal;
+      }
+    }
+    
+    @keyframes float {
+      0%, 100% { transform: translateY(0) rotate(0deg); }
+      50% { transform: translateY(-20px) rotate(5deg); }
+    }
+    
+    /* Court lines animation */
+    .court-lines {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 0;
+      opacity: 0.1;
+    }
+    
+    .court-line {
+      position: absolute;
+      background-color: var(--light);
+    }
+    
+    /* Features Section */
+    .features {
+      padding: 8rem 2rem;
+      background-color: var(--light);
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .features::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: url('https://www.transparenttextures.com/patterns/concrete-wall.png');
+      opacity: 0.05;
+      z-index: 0;
+    }
+    
+    .section-title {
+      text-align: center;
+      font-size: 3rem;
+      margin-bottom: 5rem;
+      color: var(--dark);
+      position: relative;
+      z-index: 1;
+    }
+    
+    .section-title::after {
+      content: '';
+      position: absolute;
+      bottom: -15px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 100px;
+      height: 5px;
+      background-color: var(--primary);
+      border-radius: 5px;
+    }
+    
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 3rem;
+      max-width: 1200px;
+      margin: 0 auto;
+      position: relative;
+      z-index: 1;
+    }
+    
+    .feature-card {
+      background-color: white;
+      border-radius: 15px;
+      padding: 2.5rem 2rem;
+      text-align: center;
+      box-shadow: 0 15px 40px rgba(0, 0, 0, 0.1);
+      transition: all 0.5s ease;
+      opacity: 0;
+      transform: translateY(30px);
+      position: relative;
+      overflow: hidden;
+      border: 1px solid rgba(0,0,0,0.05);
+    }
+    
+    .feature-card:hover {
+      transform: translateY(-10px);
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.2);
+    }
+    
+    .feature-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 5px;
+      background-color: var(--primary);
+      transform: scaleX(0);
+      transform-origin: left;
+      transition: transform 0.5s ease;
+    }
+    
+    .feature-card:hover::before {
+      transform: scaleX(1);
+    }
+    
+    .feature-icon {
+      font-size: 4rem;
+      color: var(--primary);
+      margin-bottom: 2rem;
+      transition: all 0.3s ease;
+    }
+    
+    .feature-card:hover .feature-icon {
+      transform: scale(1.1) rotate(10deg);
+    }
+    
+    .feature-title {
+      font-size: 1.8rem;
+      margin-bottom: 1.5rem;
+      color: var(--dark);
+      position: relative;
+      display: inline-block;
+    }
+    
+    .feature-title::after {
+      content: '';
+      position: absolute;
+      bottom: -8px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 40px;
+      height: 3px;
+      background-color: var(--primary);
+      transition: all 0.3s ease;
+    }
+    
+    .feature-card:hover .feature-title::after {
+      width: 80px;
+    }
+    
+    .feature-description {
+      color: #4A5568;
+      line-height: 1.8;
+      font-size: 1.1rem;
+    }
+    
+    /* Stats Section */
+    .stats {
+      background-color: var(--dark);
+      color: var(--light);
+      padding: 6rem 2rem;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .stats::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: url('https://www.transparenttextures.com/patterns/dark-denim-3.png');
+      opacity: 0.1;
+    }
+    
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 3rem;
+      max-width: 1200px;
+      margin: 0 auto;
+      position: relative;
+    }
+    
+    .stat-item {
+      padding: 2rem 1rem;
+      opacity: 0;
+      transform: scale(0.9);
+      position: relative;
+      z-index: 1;
+      background: rgba(255,255,255,0.05);
+      border-radius: 15px;
+      transition: all 0.5s ease;
+      border: 1px solid rgba(255,255,255,0.1);
+    }
+    
+    .stat-item:hover {
+      background: rgba(255,255,255,0.1);
+      transform: scale(1.05);
+    }
+    
+    .stat-number {
+      font-size: 4rem;
+      font-weight: 800;
+      color: var(--primary);
+      margin-bottom: 1rem;
+      transition: all 0.3s ease;
+    }
+    
+    .stat-item:hover .stat-number {
+      text-shadow: 0 0 10px rgba(255,107,0,0.5);
+    }
+    
+    .stat-label {
+      font-size: 1.3rem;
+      font-weight: 300;
+      letter-spacing: 1px;
+    }
+    
+    /* Players Showcase */
+    .players {
+      padding: 6rem 2rem;
+      background-color: var(--light);
+    }
+    
+    .player-cards {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 2rem;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    
+    .player-card {
+      width: 250px;
+      background: white;
+      border-radius: 15px;
+      overflow: hidden;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+      transition: all 0.5s ease;
+      opacity: 0;
+      transform: translateY(50px);
+    }
+    
+    .player-image {
+      height: 300px;
+      background-size: cover;
+      background-position: center;
+      position: relative;
+    }
+    
+    .player-image::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(to top, rgba(0,0,0,0.7), transparent);
+    }
+    
+    .player-info {
+      padding: 1.5rem;
+      text-align: center;
+    }
+    
+    .player-name {
+      font-size: 1.5rem;
+      margin-bottom: 0.5rem;
+      color: var(--dark);
+    }
+    
+    .player-position {
+      color: var(--primary);
+      font-weight: 600;
+      margin-bottom: 1rem;
+    }
+    
+    .player-stats {
+      display: flex;
+      justify-content: space-around;
+    }
+    
+    .stat {
+      text-align: center;
+    }
+    
+    .stat-value {
+      font-weight: 700;
+      font-size: 1.2rem;
+    }
+    
+    .stat-name {
+      font-size: 0.8rem;
+      color: #718096;
+    }
+    
+    /* Newsletter */
+    .newsletter {
+      padding: 5rem 2rem;
+      background-color: var(--primary);
+      color: white;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .newsletter::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: url('https://www.transparenttextures.com/patterns/asfalt-dark.png');
+      opacity: 0.1;
+    }
+    
+    .newsletter-content {
+      max-width: 600px;
+      margin: 0 auto;
+      position: relative;
+      z-index: 1;
+    }
+    
+    .newsletter-title {
+      font-size: 2.5rem;
+      margin-bottom: 1.5rem;
+    }
+    
+    .newsletter-subtitle {
+      font-size: 1.2rem;
+      margin-bottom: 2rem;
+      opacity: 0.9;
+    }
+    
+    .newsletter-form {
+      display: flex;
+      max-width: 500px;
+      margin: 0 auto;
+    }
+    
+    .newsletter-input {
+      flex: 1;
+      padding: 1rem;
+      border: none;
+      border-radius: 50px 0 0 50px;
+      font-size: 1rem;
+      outline: none;
+    }
+    
+    .newsletter-btn {
+      padding: 1rem 2rem;
+      background-color: var(--dark);
+      color: white;
+      border: none;
+      border-radius: 0 50px 50px 0;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    
+    .newsletter-btn:hover {
+      background-color: #1A202C;
+    }
+    
+    /* Footer */
+    footer {
+      background-color: var(--dark);
+      color: var(--light);
+      padding: 6rem 2rem 2rem;
+      position: relative;
+    }
+    
+    .footer-content {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 3rem;
+      max-width: 1200px;
+      margin: 0 auto;
+      position: relative;
+      z-index: 1;
+    }
+    
+    .footer-column h3 {
+      font-size: 1.5rem;
+      margin-bottom: 1.5rem;
+      color: var(--primary);
+      position: relative;
+      display: inline-block;
+    }
+    .footer-column h3::after {
+      content: '';
+      position: absolute;
+      bottom: -8px;
+      left: 0;
+      width: 40px;
+      height: 3px;
+      background-color: var(--primary);
+    }
+    .footer-links {
+      list-style: none;
+    }
+    .footer-links li {
+      margin-bottom: 1rem;
+      transition: all 0.3s ease;
+    }
+    .footer-links li:hover {
+      transform: translateX(5px);
+    }
+    .footer-links a {
+      color: #A0AEC0;
+      text-decoration: none;
+      transition: color 0.3s ease;
+      display: flex;
+      align-items: center;
+    }
+    .footer-links a::before {
+      content: '→';
+      margin-right: 10px;
+      color: var(--primary);
+      opacity: 0;
+      transition: all 0.3s ease;
+    }
+    .footer-links a:hover::before {
+      opacity: 1;
+      margin-right: 15px;
+    }
+    .footer-links a:hover {
+      color: var(--primary);
+    }
+    .footer-bottom {
+      text-align: center;
+      padding-top: 4rem;
+      color: #718096;
+      font-size: 0.9rem;
+      position: relative;
+      z-index: 1;
+    }
+    .social-links {
+      display: flex;
+      list-style: none;
+      margin-top: 1.5rem;
+      justify-content: center;
+    }
+    .social-links li {
+      margin: 0 0.8rem;
+    }
+    .social-links a {
+      color: #A0AEC0;
+      font-size: 1.5rem;
+      transition: all 0.3s ease;
+      display: flex;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.05);
+      align-items: center;
+      justify-content: center;
+    }
+    .social-links a:hover {
+      color: var(--primary);
+      transform: translateY(-5px);
+      background: rgba(255,255,255,0.1);
+    }
+    .back-to-top {
+      position: fixed;
+      bottom: 30px;
+      right: 30px;
+      width: 50px;
+      height: 50px;
+      background-color: var(--primary);
+      color: white;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      cursor: pointer;
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.3s ease;
+      z-index: 99;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+    }
+    .back-to-top.active {
+      opacity: 1;
+      visibility: visible;
+    }
+    .back-to-top:hover {
+      background-color: #E55D00;
+      transform: translateY(-5px);
+    }
+    .menu-toggle {
+      display: none;
+      flex-direction: column;
+      justify-content: space-between;
+      width: 30px;
+      height: 20px;
+      cursor: pointer;
+      z-index: 101;
+    }
+    
+    .menu-toggle span {
+      display: block;
+      height: 3px;
+      width: 100%;
+      background-color: var(--light);
+      transition: all 0.3s ease;
+      transform-origin: left center;
+    }
+    
+    .menu-toggle.active span:nth-child(1) {
+      transform: rotate(45deg);
+    }
+    
+    .menu-toggle.active span:nth-child(2) {
+      opacity: 0;
+    }
+    
+    .menu-toggle.active span:nth-child(3) {
+      transform: rotate(-45deg);
+    }
+    
+  .name {
+    font-weight: 600;
+    color: var(--primary);
+    transition: all 0.3s ease;
+  }
+
+  .name:hover {
+    color: var(--light);
+  }    
+
+    @media (max-width: 768px) {
+      .menu-toggle {
+        display: flex;
+      }
+    
+      .nav-links {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100vh;
+        background-color: var(--dark);
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding-top: 2rem;
+        transform: translateY(-100%);
+        transition: transform 0.5s ease;
+        z-index: 100;
+      }
+    
+      .nav-links.active {
+        transform: translateY(0);
+      }
+    
+      .nav-links li {
+        margin: 2rem 0;
+      }
+    
+      .hero-title {
+        font-size: 3rem;
+      }
+    
+      .hero-subtitle {
+        font-size: 1.2rem;
+      }
+    
+      .section-title {
+        font-size: 2.2rem;
+      }
+    
+      .btn {
+        margin: 0.5rem;
+        display: block;
+        width: 80%;
+        margin: 0.5rem auto;
+      }
+    
+      .newsletter-form {
+        flex-direction: column;
+      }
+    
+      .newsletter-input {
+        border-radius: 50px;
+        margin-bottom: 1rem;
+      }
+    
+      .newsletter-btn {
+        border-radius: 50px;
+      }
+    }
+
+    /* User navigation item */
+    #userNavItem {
+      position: relative;
+      display: flex;
+      align-items: center;
+      padding-bottom: 15px; /* Space for dropdown */
+    }
+
+    /* Show logout button on hover */
+    #userNavItem:hover #logoutBtn,
+    #logoutBtn:hover {
+      display: block !important;
+    }
+
+    /* Logout link styles */
+    #logoutLink {
+      color: var(--error) !important;
+      display: block;
+      padding: 0.5rem 1rem;
+    }
+
+    #logoutLink:hover {
+      color: var(--light) !important;
+      background-color: var(--error);
+      border-radius: 4px;
+      text-decoration: none;
+    }
+/* Welcome message styles */
+#welcomeContainer {
+  animation: fadeIn 0.5s ease-out;
+}
+
+#welcomeMessage {
+  font-weight: 400;
+  text-transform: capitalize;
+  margin: 0.5rem 0 1.5rem;
+  position: relative;
+  display: inline-block;
+}
+
+#welcomeMessage::after {
+  content: '';
+  position: absolute;
+  bottom: -8px;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background: var(--primary);
+  transform: scaleX(0);
+  transform-origin: right;
+  transition: transform 0.3s ease;
+}
+
+#welcomeMessage:hover::after {
+  transform: scaleX(1);
+  transform-origin: left;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+    </style>
+</head>
+<body>
+  <div class="loader">
+    <video class="loader-video" autoplay muted loop>
+      <source src="BG2.mp4" type="video/mp4">
+      Your browser does not support the video tag.
+    </video>
+    <div class="loader-content">
+      <div class="loading-text">Loading Hoops Hub</div>
+    </div>
+  </div>
+  <div class="floating-balls" id="floatingBalls"></div>
+  <header id="header">
+    <nav>
+      <a href="Index.html">
+        <div class="logo" >
+          <div class="logo-icon">🏀</div>
+          <span>HOOPS HUB</span>
+      </div>
+      </a>
+      <div class="menu-toggle" id="menuToggle">
+        <span></span>
+        <span></span>
+        <span></span>
+      </div>
+      <ul class="nav-links" id="navLinks">
+        <li><a href="Index.html" class="nav-link">Home</a></li>
+        <li><a href="#features" class="nav-link">Features</a></li>
+        <li><a href="#stats" class="nav-link">Stats</a></li>
+        <li><a href="#players" class="nav-link">Players</a></li>
+        <li><a href="#" class="nav-link">News</a></li>
+        <li id="userNavItem" style="position: relative;">
+          <a href="Login.html" class="nav-link" id="userNameDisplay">Login</a>
+          <div id="logoutBtn" style="display: none; position: absolute; top: 100%; left: 50%; transform: translateX(-50%); background: var(--dark); padding: 0.5rem 1rem; border-radius: 5px; box-shadow: 0 5px 15px rgba(0,0,0,0.2); width: max-content; z-index: 101;">
+            <a href="#" id="logoutLink" class="nav-link" style="color: var(--error);">Logout</a>
+          </div>
+        </li>
+    </nav>
+  </header>
+  <section class="hero" id="home">
+    <video class="hero-video" autoplay muted loop>
+      <source src="BG1.mp4" type="video/mp4">
+    </video>
+    
+    <div class="hero-content">
+      <h1 class="hero-title">BASKETBALL NEVER STOPS</h1>
+      <div id="welcomeContainer" style="display: none;">
+        <h2 id="welcomeMessage" style="font-size: 2rem; margin-bottom: 1.5rem; color: var(--light); text-shadow: 1px 1px 3px rgba(0,0,0,0.8);"></h2>
+      </div>
+      <p class="hero-subtitle">Join the ultimate basketball community for fans, players, and coaches.</p>
+      <div class="hero-buttons">
+        <a href="Login.html" class="btn">JOIN TODAY</a>
+        <a href="#features" class="btn btn-outline">EXPLORE FEATURES</a>
+      </div>
+    </div>
+    
+    <div class="hero-basketball"></div>
+  </section>
+  <section class="features" id="features">
+    <h2 class="section-title">What We Offer</h2>
+    <div class="features-grid">
+      <a href="ShotChartAnalyser.html">
+      <div class="feature-card">
+        <div class="feature-icon"><i class="fas fa-bullseye"></i></div>
+        <h3 class="feature-title">Live Shot Tracker</h3>
+        <p class="feature-description">Track every shot in real-time with our advanced shot tracker. Visualize player performance with detailed analytics.</p>
+      </div>
+      </a>
+      <a href="Scoreboard.html">
+      <div class="feature-card">
+        <div class="feature-icon"><i class="fas fa-trophy"></i></div>
+        <h3 class="feature-title">Live Scoreboard</h3>
+        <p class="feature-description">Stay updated with real-time scores, play-by-play, and game stats from all major leagues worldwide.</p>
+      </div>
+      </a>
+      <a href="Stats.html">
+      <div class="feature-card">
+        <div class="feature-icon"><i class="fas fa-chart-line"></i></div>
+        <h3 class="feature-title">Advanced Analytics</h3>
+        <p class="feature-description">Dive deep into player and team analytics with our advanced metrics and visualization tools.</p>
+      </div>
+      </a>
+      <a href="TeamGen.html">
+      <div class="feature-card">
+        <div class="feature-icon"><i class="fas fa-users"></i></div>
+        <h3 class="feature-title">Team Generator</h3>
+        <p class="feature-description">Generate teams of the given members based on skill, random or a snake draft. </p>
+      </div>
+      </a>
+      <a href="Stats.html">
+      <div class="feature-card">
+        <div class="feature-icon"><i class="fas fa-chess-king"></i></div>
+        <h3 class="feature-title">Player Stats</h3>
+        <p class="feature-description">Check out the stats of each individual player, their respective percentages and career highs.</p>
+      </div>
+      </a>
+      <div class="feature-card">
+        <div class="feature-icon"><i class="fas fa-video"></i></div>
+        <h3 class="feature-title">Video Highlights</h3>
+        <p class="feature-description">Watch the best plays, dunks, and moments from recent games with our curated video highlights.</p>
+      </div>
+    </div>
+  </section>
+  <section class="stats" id="stats">
+    <h2 class="section-title" style="color: white;">By The Numbers</h2>
+    <div class="stats-grid">
+      <div class="stat-item">
+        <div class="stat-number" id="stat1">34K+</div>
+        <div class="stat-label">ACTIVE MEMBERS</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-number" id="stat2">500+</div>
+        <div class="stat-label">GAMES COVERED</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-number" id="stat3">98%</div>
+        <div class="stat-label">SATISFACTION RATE</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-number" id="stat4">150+</div>
+        <div class="stat-label">PRO ANALYSTS</div>
+      </div>
+    </div>
+  </section>
+  <section class="players" id="players">
+    <h2 class="section-title">Featured Players</h2>
+    <div class="player-cards">
+      <div class="player-card">
+        <div class="player-image" style="background-image: url('https://cdn.nba.com/headshots/nba/latest/1040x760/2544.png');"></div>
+        <div class="player-info">
+          <h3 class="player-name">LeBron James</h3>
+          <div class="player-position">Forward • Lakers</div>
+          <div class="player-stats">
+            <div class="stat">
+              <div class="stat-value">27.2</div>
+              <div class="stat-name">PPG</div>
+            </div>
+            <div class="stat">
+              <div class="stat-value">7.5</div>
+              <div class="stat-name">RPG</div>
+            </div>
+            <div class="stat">
+              <div class="stat-value">7.3</div>
+              <div class="stat-name">APG</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="player-card">
+        <div class="player-image" style="background-image: url('https://cdn.nba.com/headshots/nba/latest/1040x760/203999.png');"></div>
+        <div class="player-info">
+          <h3 class="player-name">Nikola Jokic</h3>
+          <div class="player-position">Forward • Nuggets</div>
+          <div class="player-stats">
+            <div class="stat">
+              <div class="stat-value">31.1</div>
+              <div class="stat-name">PPG</div>
+            </div>
+            <div class="stat">
+              <div class="stat-value">11.8</div>
+              <div class="stat-name">RPG</div>
+            </div>
+            <div class="stat">
+              <div class="stat-value">5.7</div>
+              <div class="stat-name">APG</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="player-card">
+        <div class="player-image" style="background-image: url('https://cdn.nba.com/headshots/nba/latest/1040x760/201939.png');"></div>
+        <div class="player-info">
+          <h3 class="player-name">Stephen Curry</h3>
+          <div class="player-position">Guard • Warriors</div>
+          <div class="player-stats">
+            <div class="stat">
+              <div class="stat-value">29.4</div>
+              <div class="stat-name">PPG</div>
+            </div>
+            <div class="stat">
+              <div class="stat-value">6.1</div>
+              <div class="stat-name">RPG</div>
+            </div>
+            <div class="stat">
+              <div class="stat-value">6.3</div>
+              <div class="stat-name">APG</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+  <section class="newsletter">
+    <div class="newsletter-content">
+      <h2 class="newsletter-title">Stay Updated</h2>
+      <p class="newsletter-subtitle">Subscribe to our newsletter for the latest basketball news, stats, and exclusive content.</p>
+      <form class="newsletter-form">
+        <input type="email" placeholder="Your email address" class="newsletter-input" required>
+        <button type="submit" class="newsletter-btn">SUBSCRIBE</button>
+      </form>
+    </div>
+  </section>
+  <footer>
+    <div class="footer-content">
+      <div class="footer-column">
+        <h3>Hoops Hub</h3>
+        <p>The ultimate destination for basketball fans worldwide. Get the latest news, stats, and connect with the community.</p>
+        <ul class="social-links">
+          <li><a href="#"><i class="fab fa-twitter"></i></a></li>
+          <li><a href="#"><i class="fab fa-facebook-f"></i></a></li>
+          <li><a href="#"><i class="fab fa-instagram"></i></a></li>
+          <li><a href="#"><i class="fab fa-youtube"></i></a></li>
+        </ul>
+      </div>
+      <div class="footer-column">
+        <h3>Quick Links</h3>
+        <ul class="footer-links">
+          <li><a href="#home">Home</a></li>
+          <li><a href="#features">Features</a></li>
+          <li><a href="#stats">Stats</a></li>
+          <li><a href="#players">Players</a></li>
+          <li><a href="#">Schedule</a></li>
+        </ul>
+      </div>
+      <div class="footer-column">
+        <h3>Resources</h3>
+        <ul class="footer-links">
+          <li><a href="#">Player Profiles</a></li>
+          <li><a href="#">Team Rankings</a></li>
+          <li><a href="#">Fantasy Tips</a></li>
+          <li><a href="#">Video Highlights</a></li>
+          <li><a href="#">Basketball Rules</a></li>
+        </ul>
+      </div>
+      <div class="footer-column">
+        <h3>Support</h3>
+        <ul class="footer-links">
+          <li><a href="#">Help Center</a></li>
+          <li><a href="#">Contact Us</a></li>
+          <li><a href="#">Privacy Policy</a></li>
+          <li><a href="#">Terms of Service</a></li>
+          <li><a href="#">FAQ</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>&copy; 2025 Hoops Hub. All Rights Reserved.</p>
+    </div>
+  </footer>
+  <div class="back-to-top" id="backToTop">
+    <i class="fas fa-arrow-up"></i>
+  </div>
+  <script>
+    // Loader Animation - updated to handle video
+    window.addEventListener('load', () => {
+      // Optional: Preload the video to ensure smooth transition
+      const video = document.querySelector('.loader-video');
+      video.play().then(() => {
+        // Video is playing, now animate out
+        gsap.to('.loader', {
+          opacity: 0,
+          duration: 0.5,
+          delay: 1.5,
+          onComplete: () => {
+            document.querySelector('.loader').style.display = 'none';
+            video.pause();
+          }
+        });
+      }).catch(error => {
+        // Fallback if video fails to play
+        console.log('Video autoplay prevented:', error);
+        gsap.to('.loader', {
+          opacity: 0,
+          duration: 0.5,
+          delay: 1.5,
+          onComplete: () => {
+            document.querySelector('.loader').style.display = 'none';
+          }
+        });
+      });
+    });
+    // Mobile menu toggle
+    const menuToggle = document.getElementById('menuToggle');
+    const navLinks = document.getElementById('navLinks');
+    
+    menuToggle.addEventListener('click', () => {
+      menuToggle.classList.toggle('active');
+      navLinks.classList.toggle('active');
+    });
+    // Mobile touch support
+    let touchTimer;
+    userNameDisplay.addEventListener('touchstart', (e) => {
+      touchTimer = setTimeout(() => {
+        logoutBtn.style.display = logoutBtn.style.display === 'block' ? 'none' : 'block';
+      }, 300);
+    });
+
+    userNameDisplay.addEventListener('touchend', () => {
+      clearTimeout(touchTimer);
+    });
+
+    // Close when clicking elsewhere
+    document.addEventListener('click', (e) => {
+      if (!e.target.closest('#userNavItem')) {
+        logoutBtn.style.display = 'none';
+      }
+    });
+    // Close mobile menu when clicking a link
+    document.querySelectorAll('.nav-link').forEach(link => {
+      link.addEventListener('click', () => {
+        menuToggle.classList.remove('active');
+        navLinks.classList.remove('active');
+      });
+    });
+    // In your Homepage.html script section
+    function setupUserAuth() {
+      const userNameDisplay = document.getElementById('userNameDisplay');
+      const logoutBtn = document.getElementById('logoutBtn');
+      const logoutLink = document.getElementById('logoutLink');
+      const storedName = localStorage.getItem('fullName');
+
+      function updateAuthUI() {
+        if (localStorage.getItem('fullName')) {
+          userNameDisplay.textContent = localStorage.getItem('fullName');
+          logoutBtn.style.display = 'block';
+          userNameDisplay.href = "#";
+        } else {
+          userNameDisplay.textContent = "Login";
+          userNameDisplay.href = "Login.html";
+          logoutBtn.style.display = 'none';
+        }
+      }
+      // Initialize
+      updateAuthUI();
+      // Logout handler
+      if (logoutLink) {
+        logoutLink.addEventListener('click', function(e) {
+          e.preventDefault();
+          localStorage.clear();
+          window.location.href = window.location.href.split('#')[0]; // Reload the page without hash
+        });
+      }
+      // Hover effects
+      if (userNameDisplay) {
+        userNameDisplay.addEventListener('mouseenter', function() {
+          if (localStorage.getItem('fullName')) {
+            logoutBtn.style.display = 'block';
+          }
+        });
+      }
+      if (logoutBtn) {
+        logoutBtn.addEventListener('mouseleave', function() {
+          this.style.display = 'none';
+        });
+      }
+    }
+    // Check login status and display welcome message
+function checkLoginStatus() {
+  const userNameDisplay = document.getElementById('userNameDisplay');
+  const welcomeContainer = document.getElementById('welcomeContainer');
+  const welcomeMessage = document.getElementById('welcomeMessage');
+  const storedName = localStorage.getItem('fullName');
+
+  if (storedName) {
+    // User is logged in
+    userNameDisplay.textContent = storedName;
+    welcomeContainer.style.display = 'block';
+    welcomeMessage.textContent = `Welcome back, ${storedName}!`;
+    
+    // Change the subtitle for logged-in users
+    document.querySelector('.hero-subtitle').textContent = 
+      "Continue your basketball journey with personalized stats and features.";
+  } else {
+    // User is not logged in
+    welcomeContainer.style.display = 'none';
+    userNameDisplay.textContent = "Login";
+  }
+}
+
+// Run on page load
+document.addEventListener('DOMContentLoaded', function() {
+  checkLoginStatus();
+  
+  // Logout functionality
+  const logoutLink = document.getElementById('logoutLink');
+  if (logoutLink) {
+    logoutLink.addEventListener('click', function(e) {
+      e.preventDefault();
+      localStorage.removeItem('fullName');
+      checkLoginStatus(); // Update UI immediately
+      window.location.reload(); // Refresh the page
+    });
+  }
+});
+    // Run when page loads
+    document.addEventListener('DOMContentLoaded', setupUserAuth);
+    window.addEventListener('load', setupUserAuth);
+    // Header scroll effect
+    window.addEventListener('scroll', () => {
+      const header = document.getElementById('header');
+      if (window.scrollY > 50) {
+        header.classList.add('header-shrink');
+      } else {
+        header.classList.remove('header-shrink');
+      }
+      
+      // Back to top button
+      const backToTop = document.getElementById('backToTop');
+      if (window.scrollY > 300) {
+        backToTop.classList.add('active');
+      } else {
+        backToTop.classList.remove('active');
+      }
+    });
+
+    // Back to top button
+    document.getElementById('backToTop').addEventListener('click', () => {
+      gsap.to(window, {
+        scrollTo: 0,
+        duration: 1,
+        ease: 'power2.inOut'
+      });
+    });
+
+    // GSAP Animations
+    document.addEventListener('DOMContentLoaded', () => {
+      // Hero Content Animation
+      gsap.to('.hero-content', {
+        opacity: 1,
+        y: 0,
+        duration: 1.5,
+        ease: 'elastic.out(1, 0.5)',
+        delay: 2
+      });
+
+      // Hero basketball animation
+      gsap.to('.hero-basketball', {
+        x: -100,
+        y: -50,
+        rotation: 360,
+        duration: 8,
+        repeat: -1,
+        yoyo: true,
+        ease: 'sine.inOut'
+      });
+
+      // Feature Cards Animation
+      gsap.utils.toArray('.feature-card').forEach((card, i) => {
+        gsap.to(card, {
+          opacity: 1,
+          y: 0,
+          duration: 0.7,
+          delay: 0.1 * i,
+          ease: 'back.out(1.5)',
+          scrollTrigger: {
+            trigger: card,
+            start: 'top 85%'
+          }
+        });
+      });
+
+      // Stats Animation
+      gsap.utils.toArray('.stat-item').forEach((stat, i) => {
+        gsap.to(stat, {
+          opacity: 1,
+          scale: 1,
+          duration: 0.5,
+          delay: 0.1 * i,
+          ease: 'back.out(1.5)',
+          scrollTrigger: {
+            trigger: '.stats',
+            start: 'top 80%'
+          }
+        });
+      });
+
+      // Player Cards Animation
+      gsap.utils.toArray('.player-card').forEach((card, i) => {
+        gsap.to(card, {
+          opacity: 1,
+          y: 0,
+          duration: 0.7,
+          delay: 0.2 * i,
+          ease: 'back.out(1.5)',
+          scrollTrigger: {
+            trigger: card,
+            start: 'top 85%'
+          }
+        });
+      });
+
+      // Counter animations for stats
+      const statNumbers = [
+        { id: 'stat1', end: 34, suffix: 'K+' },
+        { id: 'stat2', end: 500, suffix: '+' },
+        { id: 'stat3', end: 98, suffix: '%' },
+        { id: 'stat4', end: 150, suffix: '+' }
+      ];
+
+      statNumbers.forEach(stat => {
+        ScrollTrigger.create({
+          trigger: `#${stat.id}`,
+          start: 'top 80%',
+          onEnter: () => animateCounter(stat)
+        });
+      });
+
+      function animateCounter(stat) {
+        const element = document.getElementById(stat.id);
+        let start = 0;
+        const duration = 2000;
+        const increment = stat.end / (duration / 16);
+        
+        const timer = setInterval(() => {
+          start += increment;
+          if (start >= stat.end) {
+            clearInterval(timer);
+            element.textContent = stat.end + stat.suffix;
+          } else {
+            if (stat.suffix === 'K+') {
+              element.textContent = Math.floor(start) + stat.suffix;
+            } else if (stat.suffix === '%') {
+              element.textContent = Math.floor(start) + stat.suffix;
+            } else {
+              element.textContent = Math.floor(start) + stat.suffix;
+            }
+          }
+        }, 16);
+      }
+    });
+
+    // Smooth scrolling for anchor links
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+      anchor.addEventListener('click', function(e) {
+        e.preventDefault();
+        
+        const targetId = this.getAttribute('href');
+        const targetElement = document.querySelector(targetId);
+        
+        if (targetElement) {
+          gsap.to(window, {
+            scrollTo: {
+              y: targetElement,
+              offsetY: 70
+            },
+            duration: 1,
+            ease: 'power2.inOut'
+          });
+        }
+      });
+    });
+  </script>
+</body>
+</html>

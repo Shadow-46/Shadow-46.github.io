@@ -1,0 +1,626 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Basketball Shot Chart Analyzer</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <style>
+        :root {
+            --primary: #4361ee;
+            --success: #4cc9f0;
+            --danger: #f72585;
+            --dark: #3a0ca3;
+            --light: #f8f9fa;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f0f2f5;
+            margin: 0;
+            padding: 0;
+            color: #333;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        header {
+            background: linear-gradient(135deg, var(--dark), var(--primary));
+            color: white;
+            padding: 20px 0;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+        
+        h1 {
+            text-align: center;
+            margin: 0;
+            font-size: 2rem;
+        }
+        
+        .dashboard {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        
+        @media (max-width: 768px) {
+            .dashboard {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .card {
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            overflow: hidden;
+        }
+        
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .card-header h2 {
+            margin: 0;
+            font-size: 1.5rem;
+            color: var(--dark);
+        }
+        
+        .shot-count {
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 20px;
+        }
+        
+        .shot-stat {
+            text-align: center;
+            padding: 10px;
+            border-radius: 8px;
+            flex: 1;
+            margin: 0 5px;
+        }
+        
+        .shot-stat.made {
+            background-color: rgba(76, 201, 240, 0.2);
+            border: 1px solid var(--success);
+        }
+        
+        .shot-stat.missed {
+            background-color: rgba(247, 37, 133, 0.2);
+            border: 1px solid var(--danger);
+        }
+        
+        .shot-stat h3 {
+            margin: 0;
+            font-size: 1.2rem;
+            color: #333;
+        }
+        
+        .shot-stat p {
+            font-size: 2rem;
+            font-weight: bold;
+            margin: 5px 0;
+        }
+        
+        .shot-stat small {
+            font-size: 0.85rem;
+            color: #666;
+        }
+        
+        .court-container {
+            position: relative;
+            margin: 0 auto;
+            width: 500px;
+            height: 470px;
+        }
+        
+        #basketball-court {
+            width: 100%;
+            height: 100%;
+            border-radius: 8px;
+            border: 2px solid #ddd;
+            cursor: crosshair;
+            background-color: #e9ecef;
+        }
+        
+        .shot-icons {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+        
+        .shot-icons .shot {
+            position: absolute;
+            transform: translate(-50%, -50%);
+            font-size: 1rem;
+            width: 15px;
+            height: 15px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .shot-icons .shot.made {
+            background-color: var(--success);
+            border: 2px solid #fff;
+        }
+        
+        .shot-icons .shot.missed {
+            background-color: var(--danger);
+            border: 2px solid #fff;
+        }
+        
+        .button-group {
+            display: flex;
+            justify-content: center;
+            margin: 15px 0;
+        }
+        
+        .btn {
+            padding: 8px 16px;
+            margin: 0 5px;
+            border-radius: 5px;
+            border: none;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        
+        .btn-made {
+            background-color: var(--success);
+            color: white;
+        }
+        
+        .btn-missed {
+            background-color: var(--danger);
+            color: white;
+        }
+        
+        .btn-reset {
+            background-color: #5a5a5a;
+            color: white;
+        }
+        
+        .btn-zone {
+            background-color: var(--primary);
+            color: white;
+            margin: 5px;
+        }
+        
+        .zones-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin-top: 10px;
+        }
+        
+        .chart-container {
+            height: 250px;
+            width: 100%;
+            max-width: 400px;
+            margin: 0 auto;
+        }
+        
+        canvas {
+        display: block;
+        max-width: 100%;
+        height: auto;
+        }        
+        footer {
+            text-align: center;
+            margin-top: 30px;
+            padding: 15px 0;
+            font-size: 0.85rem;
+            color: #666;
+        }
+        
+        .legend {
+            display: flex;
+            justify-content: center;
+            margin: 10px 0;
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            margin: 0 10px;
+            font-size: 0.9rem;
+        }
+        
+        .legend-color {
+            width: 15px;
+            height: 15px;
+            border-radius: 50%;
+            margin-right: 5px;
+        }
+        
+        .legend-color.made {
+            background-color: var(--success);
+        }
+        
+        .legend-color.missed {
+            background-color: var(--danger);
+        }
+        
+        .toggle-label {
+            margin-right: 8px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 48px;
+            height: 24px;
+        }
+        
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 24px;
+        }
+        
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 18px;
+            width: 18px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+        
+        input:checked + .slider {
+            background-color: var(--primary);
+        }
+        
+        input:focus + .slider {
+            box-shadow: 0 0 1px var(--primary);
+        }
+        
+        input:checked + .slider:before {
+            transform: translateX(24px);
+        }
+        
+        .active {
+            box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.5);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Basketball Shot Chart Analyzer</h1>
+        </header>
+        
+        <div class="dashboard">
+            <div class="card">
+                <div class="card-header">
+                    <h2>Shot Chart</h2>
+                </div>
+                
+                <div class="shot-count">
+                    <div class="shot-stat made">
+                        <h3>Made</h3>
+                        <p id="made-count">0</p>
+                        <small id="made-percentage">0%</small>
+                    </div>
+                    <div class="shot-stat missed">
+                        <h3>Missed</h3>
+                        <p id="missed-count">0</p>
+                        <small id="missed-percentage">0%</small>
+                    </div>
+                </div>
+                
+                <div class="button-group">
+                    <button id="made-btn" class="btn btn-made">Made Shot</button>
+                    <button id="missed-btn" class="btn btn-missed">Missed Shot</button>
+                    <button id="reset-btn" class="btn btn-reset">Reset</button>
+                </div>
+                
+                <div class="court-container">
+                    <img src="BasketballCourtTP.jpg" alt="Basketball Court" id="basketball-court">
+                    <div class="shot-icons" id="shot-icons"></div>
+                </div>
+                
+                <div class="legend">
+                    <div class="legend-item">
+                        <div class="legend-color made"></div>
+                        <span>Made Shot</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color missed"></div>
+                        <span>Missed Shot</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card">
+                <div class="card-header">
+                    <h2>Shot Analysis</h2>
+                </div>
+                
+                <div class="zones-container">
+                    <button class="btn btn-zone active" data-zone="all">All Shots</button>
+                    <button class="btn btn-zone" data-zone="paint">Paint</button>
+                    <button class="btn btn-zone" data-zone="midrange">Mid-Range</button>
+                    <button class="btn btn-zone" data-zone="3pt">3-Point</button>
+                    <button class="btn btn-zone" data-zone="corner3">Corner 3</button>
+                </div>
+                
+                <div class="chart-container">
+                    <canvas id="shotChart"></canvas>
+                </div>
+                
+                <div class="chart-container">
+                    <canvas id="zoneChart"></canvas>
+                </div>
+            </div>
+        </div>
+        
+        <footer>
+            <p>Basketball Shot Chart Analyzer &copy; 2025</p>
+        </footer>
+    </div>
+    
+    <script>
+        // Court dimensions (for zone calculations)
+        const COURT = {
+            width: 500,
+            height: 470,
+            threePointRadius: 238,
+            threePointY: 52,
+            paintWidth: 160,
+            paintHeight: 190,
+            freeThrowRadius: 60,
+            freeThrowY: 190,
+            basketY: 60,
+            cornerThreeX: 220,
+            basketX: 250
+        };
+    
+        // State management
+        let shotMode = 'made'; // 'made' or 'missed'
+        let shots = [];
+        let selectedZone = 'all';
+        let showHeatmap = false;
+    
+        // Elements
+        const courtContainer = document.querySelector('.court-container');
+        const shotIcons = document.getElementById('shot-icons');
+        const madeBtn = document.getElementById('made-btn');
+        const missedBtn = document.getElementById('missed-btn');
+        const resetBtn = document.getElementById('reset-btn');
+        const madeCount = document.getElementById('made-count');
+        const missedCount = document.getElementById('missed-count');
+        const madePercentage = document.getElementById('made-percentage');
+        const missedPercentage = document.getElementById('missed-percentage');
+        const heatmapToggle = document.getElementById('heatmap-toggle');
+        const shotChartCanvas = document.getElementById('shotChart');
+        const zoneChartCanvas = document.getElementById('zoneChart');
+        const zoneButtons = document.querySelectorAll('.btn-zone');
+    
+        // Initialize charts
+        let shotChart;
+        let zoneChart;
+    
+        function initializeCharts() {
+            // Shot Chart
+            shotChart = new Chart(shotChartCanvas, {
+                type: 'bar',
+                data: {
+                    labels: ['Made', 'Missed'],
+                    datasets: [{
+                        label: 'Shots',
+                        data: [0, 0],
+                        backgroundColor: ['#4cc9f0', '#f72585']
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Shot Type'
+                            }
+                        },
+                        y: {
+                            title: {
+                                display: true,
+                                text: 'Count'
+                            },
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+    
+            // Zone Chart
+            zoneChart = new Chart(zoneChartCanvas, {
+                type: 'pie',
+                data: {
+                    labels: ['Paint', 'Mid-Range', '3-Point', 'Corner 3'],
+                    datasets: [{
+                        label: 'Zones',
+                        data: [0, 0, 0, 0],
+                        backgroundColor: ['#4361ee', '#4cc9f0', '#f72585', '#3a0ca3']
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'top'
+                        }
+                    }
+                }
+            });
+        }
+    
+        // Update charts
+        function updateCharts() {
+            // Filter shots based on the selected zone
+            const filteredShots = selectedZone === 'all' ? shots : shots.filter(shot => shot.zone === selectedZone);
+    
+            // Update Shot Chart
+            const madeShots = filteredShots.filter(shot => shot.made).length;
+            const missedShots = filteredShots.filter(shot => !shot.made).length;
+            shotChart.data.datasets[0].data = [madeShots, missedShots];
+            shotChart.update();
+    
+            // Update Zone Chart
+            const paintShots = shots.filter(shot => shot.zone === 'paint').length;
+            const midrangeShots = shots.filter(shot => shot.zone === 'midrange').length;
+            const threePointShots = shots.filter(shot => shot.zone === '3pt').length;
+            const cornerThreeShots = shots.filter(shot => shot.zone === 'corner3').length;
+            zoneChart.data.datasets[0].data = [paintShots, midrangeShots, threePointShots, cornerThreeShots];
+            zoneChart.update();
+        }
+    
+        // Determine which zone a shot is in
+        function getZone(x, y) {
+            const distanceFromBasket = Math.sqrt(Math.pow(x - COURT.basketX, 2) + Math.pow(y - COURT.basketY, 2));
+    
+            // Check if it's in the paint
+            if (x >= (COURT.width - COURT.paintWidth) / 2 && 
+                x <= (COURT.width + COURT.paintWidth) / 2 && 
+                y >= COURT.basketY && 
+                y <= COURT.basketY + COURT.paintHeight) {
+                return 'paint';
+            }
+    
+            // Check if it's a corner three
+            if (y <= COURT.threePointY && (x <= COURT.cornerThreeX || x >= COURT.width - COURT.cornerThreeX)) {
+                return 'corner3';
+            }
+    
+            // Check if it's a three-pointer
+            if (distanceFromBasket > COURT.threePointRadius) {
+                return '3pt';
+            }
+    
+            // Otherwise it's a mid-range
+            return 'midrange';
+        }
+    
+        // Add a shot to the chart
+        function addShot(x, y, made) {
+            const shot = document.createElement('div');
+            shot.classList.add('shot');
+            shot.classList.add(made ? 'made' : 'missed');
+            shot.style.left = `${x}px`;
+            shot.style.top = `${y}px`;
+            shotIcons.appendChild(shot);
+    
+            const zone = getZone(x, y);
+            shots.push({ x, y, made, zone });
+    
+            updateStats();
+            updateCharts();
+        }
+    
+        // Update shot statistics
+        function updateStats() {
+            const madeShots = shots.filter(shot => shot.made).length;
+            const missedShots = shots.filter(shot => !shot.made).length;
+            const totalShots = madeShots + missedShots;
+    
+            madeCount.textContent = madeShots;
+            missedCount.textContent = missedShots;
+    
+            const madePercent = totalShots > 0 ? Math.round((madeShots / totalShots) * 100) : 0;
+            const missedPercent = totalShots > 0 ? Math.round((missedShots / totalShots) * 100) : 0;
+    
+            madePercentage.textContent = `${madePercent}%`;
+            missedPercentage.textContent = `${missedPercent}%`;
+        }
+    
+        // Handle clicks on the court
+        courtContainer.addEventListener('click', (event) => {
+            const rect = courtContainer.getBoundingClientRect();
+            const x = event.clientX - rect.left;
+            const y = event.clientY - rect.top;
+    
+            addShot(x, y, shotMode === 'made');
+        });
+    
+        // Mode buttons
+        madeBtn.addEventListener('click', () => {
+            shotMode = 'made';
+            madeBtn.classList.add('active');
+            missedBtn.classList.remove('active');
+        });
+    
+        missedBtn.addEventListener('click', () => {
+            shotMode = 'missed';
+            missedBtn.classList.add('active');
+            madeBtn.classList.remove('active');
+        });
+    
+        // Reset button
+        resetBtn.addEventListener('click', () => {
+            shots = [];
+            shotIcons.innerHTML = '';
+            updateStats();
+            updateCharts();
+        });
+    
+        // Zone buttons
+        zoneButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                selectedZone = button.dataset.zone;
+    
+                // Highlight the active button
+                zoneButtons.forEach(btn => btn.classList.remove('active'));
+                button.classList.add('active');
+    
+                updateCharts();
+            });
+        });
+    
+        // Initialize
+        madeBtn.classList.add('active');
+        initializeCharts();
+    </script>
+</body>
+</html>
