@@ -321,26 +321,24 @@
     </div>
   </div>
   <script>
-    const form = document.getElementById('signupForm'); // This was missing!
-  
-    // Skill level input value display
+    const form = document.getElementById('signupForm');
     const skillLevelInput = document.getElementById('skillLevel');
     const skillValue = document.querySelector('.skill-value');
     skillLevelInput.addEventListener('input', () => {
       skillValue.textContent = skillLevelInput.value;
     });
-  
+
     form.addEventListener('submit', function(e) {
       e.preventDefault();
       
-      // Reset error states
+      
       const errorGroups = document.querySelectorAll('.form-group.error');
       errorGroups.forEach(group => group.classList.remove('error'));
       
-      // Validate inputs
+      
       let isValid = true;
       
-      // Full Name validation
+      
       const fullName = document.getElementById('fullName').value.trim();
       localStorage.setItem('fullName', fullName);
       if (fullName === '' || fullName.length < 2) {
@@ -348,35 +346,35 @@
         isValid = false;
       }
       
-      // Email validation
+      
       const email = document.getElementById('email').value.trim();
       if (!validateEmail(email)) {
         showError('email', 'Please enter a valid email address');
         isValid = false;
       }
       
-      // Password validation
+      
       const password = document.getElementById('password').value;
       if (password.length < 6) {
         showError('password', 'Password must be at least 6 characters');
         isValid = false;
       }
       
-      // Age validation
+      
       const age = parseInt(document.getElementById('age').value);
       if (isNaN(age) || age < 12 || age > 99) {
         showError('age', 'Please enter a valid age (12-99)');
         isValid = false;
       }
       
-      // Position validation
+      
       const position = document.querySelector('input[name="position"]:checked');
       if (!position) {
         showError(document.querySelector('.position-options').parentElement, 'Please select a position');
         isValid = false;
       }
       
-      // If form is valid, submit it
+      
       if (isValid) {
         const formData = {
           fullName,
@@ -389,7 +387,7 @@
         
         console.log('Form submitted:', formData);
         alert(`Welcome to Hoops Hub, ${fullName}! Your account has been created.`);
-        // Redirect
+        
         window.location.href = 'index.html';
       }
     });
