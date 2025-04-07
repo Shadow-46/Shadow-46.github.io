@@ -38,7 +38,6 @@
       background-attachment: fixed;
     }
 
-    /* Header */
     header {
       background-color: rgba(26, 32, 44, 0.95);
       color: var(--light);
@@ -80,7 +79,6 @@
       font-size: 2.5rem;
     }
 
-    /* Main Content */
     .container {
       max-width: 1200px;
       margin: 100px auto 50px;
@@ -116,7 +114,6 @@
       border-radius: 5px;
     }
 
-    /* Input Area */
     .input-area {
       margin-bottom: 2rem;
     }
@@ -420,7 +417,6 @@
   </div>
 
   <script>
-    // Header scroll effect
     window.addEventListener('scroll', () => {
       const header = document.getElementById('header');
       if (window.scrollY > 50) {
@@ -430,17 +426,14 @@
       }
     });
 
-    // Parse player input
     function parsePlayers(input) {
       const players = [];
-      // Split by newlines or commas
       const lines = input.split(/[\n,]/);
       
       for (let line of lines) {
         line = line.trim();
         if (!line) continue;
         
-        // Extract name and skill (skill is optional)
         const match = line.match(/^(.*?)(?:\((\d+)\))?$/);
         if (match) {
           const name = match[1].trim();
@@ -454,7 +447,6 @@
       return players;
     }
 
-    // Display player tags
     function displayPlayerTags(players) {
       const container = document.getElementById('playerTags');
       container.innerHTML = '';
@@ -469,7 +461,6 @@
         container.appendChild(tag);
       });
       
-      // Add event listeners to remove buttons
       document.querySelectorAll('.player-tag .remove').forEach(btn => {
         btn.addEventListener('click', function() {
           const index = parseInt(this.getAttribute('data-index'));
@@ -479,14 +470,12 @@
       });
     }
 
-    // Generate teams
     function generateTeams(players, method, teamNames) {
       if (players.length < 2) {
         alert('You need at least 2 players to generate teams!');
         return;
       }
       
-      // Shuffle players array
       const shuffled = [...players].sort(() => Math.random() - 0.5);
       let team1 = [];
       let team2 = [];
@@ -494,18 +483,15 @@
       let team2Skill = 0;
       
       if (method === 'random') {
-        // Pure random split
         const half = Math.ceil(shuffled.length / 2);
         team1 = shuffled.slice(0, half);
         team2 = shuffled.slice(half);
         
-        // Calculate team skills
         team1Skill = team1.reduce((sum, player) => sum + player.skill, 0);
         team2Skill = team2.reduce((sum, player) => sum + player.skill, 0);
       } 
       else if (method === 'balanced') {
-        // Skill-balanced teams
-        shuffled.sort((a, b) => b.skill - a.skill); // Sort by skill descending
+        shuffled.sort((a, b) => b.skill - a.skill);
         
         for (let i = 0; i < shuffled.length; i++) {
           if (team1Skill <= team2Skill) {
@@ -518,8 +504,7 @@
         }
       }
       else if (method === 'snake') {
-        // Snake draft (alternating picks)
-        shuffled.sort((a, b) => b.skill - a.skill); // Sort by skill descending
+        shuffled.sort((a, b) => b.skill - a.skill); 
         
         for (let i = 0; i < shuffled.length; i++) {
           if (i % 2 === 0) {
@@ -532,11 +517,9 @@
         }
       }
       
-      // Display the teams
       displayTeams(team1, team2, team1Skill, team2Skill, teamNames);
     }
 
-    // Display teams
     function displayTeams(team1, team2, team1Skill, team2Skill, teamNames) {
       const teamNamesArr = teamNames.split(',').map(name => name.trim());
       
@@ -546,7 +529,6 @@
       document.getElementById('team1Skill').textContent = team1Skill;
       document.getElementById('team2Skill').textContent = team2Skill;
       
-      // Display team members
       const team1List = document.getElementById('team1Members');
       const team2List = document.getElementById('team2Members');
       
@@ -569,7 +551,6 @@
         team2List.appendChild(li);
       });
       
-      // Update balance indicator
       const balanceDiff = Math.abs(team1Skill - team2Skill);
       const totalSkill = team1Skill + team2Skill;
       const balancePercentage = (balanceDiff / totalSkill) * 100;
@@ -589,11 +570,9 @@
         balanceElement.className = 'unbalanced';
       }
       
-      // Show results
       document.getElementById('teamsResult').style.display = 'block';
     }
 
-    // Event listeners
     document.getElementById('generateBtn').addEventListener('click', function() {
       const input = document.getElementById('playerInput').value;
       const method = document.getElementById('teamMethod').value;
@@ -604,9 +583,7 @@
       generateTeams(players, method, teamNames);
     });
 
-    // Sample data button for testing
     document.addEventListener('DOMContentLoaded', function() {
-      // Add sample data button for demo purposes
       const sampleBtn = document.createElement('button');
       sampleBtn.textContent = 'Load Sample Players';
       sampleBtn.className = 'btn';
