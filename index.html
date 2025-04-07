@@ -64,7 +64,7 @@
       width: 100%;
       height: 100%;
       object-fit: cover;
-      opacity: 0.8; /* Adjust opacity as needed */
+      opacity: 0.8; 
     }
     
     .loader-content {
@@ -82,7 +82,7 @@
       text-shadow: 0 0 10px rgba(0,0,0,0.5);
     }
     
-    /* Remove or keep the ball animation as an overlay if you want */
+    
     .ball {
       width: 80px;
       height: 80px;
@@ -92,7 +92,7 @@
       overflow: hidden;
       animation: bounce 1.5s infinite;
       box-shadow: inset -10px -10px 15px rgba(0,0,0,0.3);
-      z-index: 3; /* Higher than video */
+      z-index: 3; 
     }
     
     .ball::before {
@@ -136,7 +136,7 @@
       75% { transform: translateY(-15px) rotate(-5deg); }
     }
     
-    /* Floating basketballs in background */
+    
     .floating-balls {
       position: fixed;
       top: 0;
@@ -157,7 +157,7 @@
       box-shadow: inset -5px -5px 10px rgba(0,0,0,0.2);
     }
     
-    /* Header */
+    
     header {
       background-color: rgba(26, 32, 44, 0.9);
       color: var(--light);
@@ -381,7 +381,6 @@
       z-index: 1;
     }  
 
-    /* Medium devices (tablets) */
     @media (max-width: 992px) {
       .hero {
         min-height: 500px;
@@ -397,7 +396,7 @@
       }
     }
 
-    /* Small devices (phones) */
+    
     @media (max-width: 768px) {
       .hero {
         min-height: 450px;
@@ -426,11 +425,11 @@
       }
       
       .hero-basketball {
-        display: none; /* Optional: remove on small screens */
+        display: none;
       }
     }
 
-    /* Extra small devices */
+    
     @media (max-width: 480px) {
       .hero {
         min-height: 400px;
@@ -446,7 +445,7 @@
       50% { transform: translateY(-20px) rotate(5deg); }
     }
     
-    /* Court lines animation */
+    
     .court-lines {
       position: absolute;
       top: 0;
@@ -462,7 +461,7 @@
       background-color: var(--light);
     }
     
-    /* Features Section */
+    
     .features {
       padding: 8rem 2rem;
       background-color: var(--light);
@@ -590,7 +589,7 @@
       font-size: 1.1rem;
     }
     
-    /* Stats Section */
+    
     .stats {
       background-color: var(--dark);
       color: var(--light);
@@ -655,7 +654,7 @@
       letter-spacing: 1px;
     }
     
-    /* Players Showcase */
+    
     .players {
       padding: 6rem 2rem;
       background-color: var(--light);
@@ -734,7 +733,7 @@
       color: #718096;
     }
     
-    /* Newsletter */
+    
     .newsletter {
       padding: 5rem 2rem;
       background-color: var(--primary);
@@ -804,7 +803,7 @@
       background-color: #1A202C;
     }
     
-    /* Footer */
+    
     footer {
       background-color: var(--dark);
       color: var(--light);
@@ -1034,21 +1033,21 @@
       }
     }
 
-    /* User navigation item */
+    
     #userNavItem {
       position: relative;
       display: flex;
       align-items: center;
-      padding-bottom: 15px; /* Space for dropdown */
+      padding-bottom: 15px;
     }
 
-    /* Show logout button on hover */
+    
     #userNavItem:hover #logoutBtn,
     #logoutBtn:hover {
       display: block !important;
     }
 
-    /* Logout link styles */
+    
     #logoutLink {
       color: var(--error) !important;
       display: block;
@@ -1061,7 +1060,7 @@
       border-radius: 4px;
       text-decoration: none;
     }
-/* Welcome message styles */
+
 #welcomeContainer {
   animation: fadeIn 0.5s ease-out;
 }
@@ -1350,12 +1349,11 @@
     <i class="fas fa-arrow-up"></i>
   </div>
   <script>
-    // Loader Animation - updated to handle video
     window.addEventListener('load', () => {
-      // Optional: Preload the video to ensure smooth transition
+      
       const video = document.querySelector('.loader-video');
       video.play().then(() => {
-        // Video is playing, now animate out
+        
         gsap.to('.loader', {
           opacity: 0,
           duration: 0.5,
@@ -1366,7 +1364,7 @@
           }
         });
       }).catch(error => {
-        // Fallback if video fails to play
+        
         console.log('Video autoplay prevented:', error);
         gsap.to('.loader', {
           opacity: 0,
@@ -1378,7 +1376,7 @@
         });
       });
     });
-    // Mobile menu toggle
+    
     const menuToggle = document.getElementById('menuToggle');
     const navLinks = document.getElementById('navLinks');
     
@@ -1386,7 +1384,7 @@
       menuToggle.classList.toggle('active');
       navLinks.classList.toggle('active');
     });
-    // Mobile touch support
+    
     let touchTimer;
     userNameDisplay.addEventListener('touchstart', (e) => {
       touchTimer = setTimeout(() => {
@@ -1398,20 +1396,20 @@
       clearTimeout(touchTimer);
     });
 
-    // Close when clicking elsewhere
+    
     document.addEventListener('click', (e) => {
       if (!e.target.closest('#userNavItem')) {
         logoutBtn.style.display = 'none';
       }
     });
-    // Close mobile menu when clicking a link
+    
     document.querySelectorAll('.nav-link').forEach(link => {
       link.addEventListener('click', () => {
         menuToggle.classList.remove('active');
         navLinks.classList.remove('active');
       });
     });
-    // In your Homepage.html script section
+    
     function setupUserAuth() {
       const userNameDisplay = document.getElementById('userNameDisplay');
       const logoutBtn = document.getElementById('logoutBtn');
@@ -1429,17 +1427,17 @@
           logoutBtn.style.display = 'none';
         }
       }
-      // Initialize
+      
       updateAuthUI();
-      // Logout handler
+      
       if (logoutLink) {
         logoutLink.addEventListener('click', function(e) {
           e.preventDefault();
           localStorage.clear();
-          window.location.href = window.location.href.split('#')[0]; // Reload the page without hash
+          window.location.href = window.location.href.split('#')[0];
         });
       }
-      // Hover effects
+      
       if (userNameDisplay) {
         userNameDisplay.addEventListener('mouseenter', function() {
           if (localStorage.getItem('fullName')) {
@@ -1453,7 +1451,7 @@
         });
       }
     }
-    // Check login status and display welcome message
+    
 function checkLoginStatus() {
   const userNameDisplay = document.getElementById('userNameDisplay');
   const welcomeContainer = document.getElementById('welcomeContainer');
@@ -1461,40 +1459,40 @@ function checkLoginStatus() {
   const storedName = localStorage.getItem('fullName');
 
   if (storedName) {
-    // User is logged in
+    
     userNameDisplay.textContent = storedName;
     welcomeContainer.style.display = 'block';
     welcomeMessage.textContent = `Welcome back, ${storedName}!`;
     
-    // Change the subtitle for logged-in users
+    
     document.querySelector('.hero-subtitle').textContent = 
       "Continue your basketball journey with personalized stats and features.";
   } else {
-    // User is not logged in
+    
     welcomeContainer.style.display = 'none';
     userNameDisplay.textContent = "Login";
   }
 }
 
-// Run on page load
+
 document.addEventListener('DOMContentLoaded', function() {
   checkLoginStatus();
   
-  // Logout functionality
+  
   const logoutLink = document.getElementById('logoutLink');
   if (logoutLink) {
     logoutLink.addEventListener('click', function(e) {
       e.preventDefault();
       localStorage.removeItem('fullName');
-      checkLoginStatus(); // Update UI immediately
-      window.location.reload(); // Refresh the page
+      checkLoginStatus();
+      window.location.reload();
     });
   }
 });
-    // Run when page loads
+    
     document.addEventListener('DOMContentLoaded', setupUserAuth);
     window.addEventListener('load', setupUserAuth);
-    // Header scroll effect
+    
     window.addEventListener('scroll', () => {
       const header = document.getElementById('header');
       if (window.scrollY > 50) {
@@ -1503,7 +1501,7 @@ document.addEventListener('DOMContentLoaded', function() {
         header.classList.remove('header-shrink');
       }
       
-      // Back to top button
+      
       const backToTop = document.getElementById('backToTop');
       if (window.scrollY > 300) {
         backToTop.classList.add('active');
@@ -1512,7 +1510,7 @@ document.addEventListener('DOMContentLoaded', function() {
       }
     });
 
-    // Back to top button
+    
     document.getElementById('backToTop').addEventListener('click', () => {
       gsap.to(window, {
         scrollTo: 0,
@@ -1521,9 +1519,7 @@ document.addEventListener('DOMContentLoaded', function() {
       });
     });
 
-    // GSAP Animations
     document.addEventListener('DOMContentLoaded', () => {
-      // Hero Content Animation
       gsap.to('.hero-content', {
         opacity: 1,
         y: 0,
@@ -1532,7 +1528,6 @@ document.addEventListener('DOMContentLoaded', function() {
         delay: 2
       });
 
-      // Hero basketball animation
       gsap.to('.hero-basketball', {
         x: -100,
         y: -50,
@@ -1543,7 +1538,6 @@ document.addEventListener('DOMContentLoaded', function() {
         ease: 'sine.inOut'
       });
 
-      // Feature Cards Animation
       gsap.utils.toArray('.feature-card').forEach((card, i) => {
         gsap.to(card, {
           opacity: 1,
@@ -1558,7 +1552,6 @@ document.addEventListener('DOMContentLoaded', function() {
         });
       });
 
-      // Stats Animation
       gsap.utils.toArray('.stat-item').forEach((stat, i) => {
         gsap.to(stat, {
           opacity: 1,
@@ -1573,7 +1566,6 @@ document.addEventListener('DOMContentLoaded', function() {
         });
       });
 
-      // Player Cards Animation
       gsap.utils.toArray('.player-card').forEach((card, i) => {
         gsap.to(card, {
           opacity: 1,
@@ -1588,7 +1580,6 @@ document.addEventListener('DOMContentLoaded', function() {
         });
       });
 
-      // Counter animations for stats
       const statNumbers = [
         { id: 'stat1', end: 34, suffix: 'K+' },
         { id: 'stat2', end: 500, suffix: '+' },
@@ -1628,7 +1619,6 @@ document.addEventListener('DOMContentLoaded', function() {
       }
     });
 
-    // Smooth scrolling for anchor links
     document.querySelectorAll('a[href^="#"]').forEach(anchor => {
       anchor.addEventListener('click', function(e) {
         e.preventDefault();
